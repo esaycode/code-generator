@@ -21,21 +21,21 @@ public class ${className}DaoImpl implements UserDao{
 	${className}Mapper ${classNameLower}Mapper;
 
 	@Override
-	public void deleteByPrimaryKey(Object primaryKey) {
+	public int deleteByPrimaryKey(Object primaryKey) {
 		assert (primaryKey != null);
-		${classNameLower}Mapper.deleteByPrimaryKey((Long) primaryKey);
+		return ${classNameLower}Mapper.deleteByPrimaryKey((Long) primaryKey);
 	}
 
 	@Override
-	public void deleteByPrimaryKeys(Object... primaryKeys) {
+	public int deleteByPrimaryKeys(Object... primaryKeys) {
 		assert (primaryKeys != null);
-		${classNameLower}Mapper.deleteByPrimaryKeys(Arrays.asList((Long[]) primaryKeys));
+		return ${classNameLower}Mapper.deleteByPrimaryKeys(Arrays.asList((Long[]) primaryKeys));
 	}
 
 	@Override
-	public void deleteByEntry(UserModel entity) {
+	public int deleteByEntry(UserModel entity) {
 		assert (entity != null);
-		${classNameLower}Mapper.deleteByEntry(entity);
+		return ${classNameLower}Mapper.deleteByEntry(entity);
 	}
 
 	@Override
@@ -51,54 +51,41 @@ public class ${className}DaoImpl implements UserDao{
 	}
 
 	@Override
-	public void update(UserModel entity) {
+	public int update(UserModel entity) {
 		assert (entity != null);
-		${classNameLower}Mapper.insert(entity);
+		return ${classNameLower}Mapper.update(entity);
 	}
 
 	@Override
-	public void updateByPrimaryKey(UserModel entity, Object... primaryKeys) {
+	public int updateByPrimaryKeys(UserModel entity, Object... primaryKeys) {
 		assert (entity != null && primaryKeys != null);
-		${classNameLower}Mapper.updateByPrimaryKeys(entity, Arrays.asList((Long[]) primaryKeys));
+		return ${classNameLower}Mapper.updateByPrimaryKeys(entity, Arrays.asList((Long[]) primaryKeys));
 
 	}
 
 	@Override
-	public void updateByExample(UserModel entity, UserModel example) {
+	public int updateByExample(UserModel entity, UserModel example) {
 		assert (entity != null && example != null);
-		${classNameLower}Mapper.updateByExample(entity, example);	
+		return ${classNameLower}Mapper.updateByExample(entity, example);	
 	}
 
 	@Override
-	public void updateList(List<UserModel> list) {
-		assert(list !=null && list.size() > 0 );
-	//	${classNameLower}Mapper.updateList(list);
-	}
-
-	@Override
-	public void updateNotNull(UserModel entity) {
+	public int updateNotNull(UserModel entity) {
 		assert (entity != null);
-		${classNameLower}Mapper.updateNotNull(entity);
+		return ${classNameLower}Mapper.updateNotNull(entity);
 	}
 
 	@Override
-	public void updateByPrimaryKeyNotNull(UserModel entity, Object... primaryKeys) {
+	public int updateByPrimaryKeysNotNull(UserModel entity, Object... primaryKeys) {
 		assert (entity != null && primaryKeys != null);
-		${classNameLower}Mapper.updateByPrimaryKeyNotNull(entity, Arrays.asList((Long[]) primaryKeys));
+		return ${classNameLower}Mapper.updateByPrimaryKeyNotNull(entity, Arrays.asList((Long[]) primaryKeys));
 		
 	}
 
 	@Override
-	public void updateByExampleNotNull(UserModel entity, UserModel example) {
+	public int updateByExampleNotNull(UserModel entity, UserModel example) {
 		assert (entity != null && example != null);
-		${classNameLower}Mapper.updateByExampleNotNull(entity, example);	
-	}
-
-	@Override
-	public void updateListNotNull(List<UserModel> list) {
-		assert(list !=null && list.size() > 0 );
-	//	${classNameLower}Mapper.updateListNotNull(list);
-		
+		return ${classNameLower}Mapper.updateByExampleNotNull(entity, example);	
 	}
 
 	@Override
@@ -114,7 +101,7 @@ public class ${className}DaoImpl implements UserDao{
 	}
 
 	@Override
-	public List<UserModel> selectPageByStartRow(UserModel entity, Long startRow, Long limit) {
+	public List<UserModel> selectListByStartRow(UserModel entity, Long startRow, Long limit) {
 		assert (entity != null);
 		assert (startRow >= 0);
 		assert (limit >= 0);
@@ -122,7 +109,7 @@ public class ${className}DaoImpl implements UserDao{
 	}
 
 	@Override
-	public List<UserModel> selectPageByStartPrimaryKey(UserModel entity, Integer limit) {
+	public List<UserModel> selectListByStartPrimaryKey(UserModel entity, Integer limit) {
 		assert (entity != null);
 		assert (limit >= 0);
 		return ${classNameLower}Mapper.selectListByStartPrimaryKey(entity, limit.intValue());
