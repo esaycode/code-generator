@@ -1,0 +1,312 @@
+<#assign className = table.className> 
+<#assign tableName = table.sqlName>
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+<mapper namespace="${basepackage}.imp.mybatis.mapper.${className}Mapper" >
+  <resultMap id="BaseResultMap" type="${basepackage}.model.${className}Model" >
+  	<#list table.columns as column>
+	  <#if column.pk>
+	    <id column="${column.sqlName}" property="${column.columnNameFirstLower}" jdbcType="${column.sqlTypeName}" />
+	  </#if>
+    </#list>
+  	<#list table.columns as column>
+	  <#if !column.pk>
+	    <result column="${column.sqlName}" property="${column.columnNameFirstLower}" jdbcType="${column.sqlTypeName}" />
+	  </#if>
+  </#list>
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    <#list table.columns as column>
+    	<#if column.keyWord>`</#if>${column.sqlName}<#if column.keyWord>`</#if><#if column_has_next>,</#if>
+    </#list>
+  </sql>
+  
+  <sql id="Example_Where_Clause" >
+    <#list table.columns as column>
+    AND
+    <if test="example.${column.columnNameFirstLower} != null">  
+    <#if column.keyWord>`</#if>${column.sqlName}<#if column.keyWord>`</#if>  = ${column.beginDelimiter} example.${column.columnNameFirstLower},jdbcType=${column.sqlTypeName} } 
+    </if>  
+    </#list>  
+  </sql>
+  
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from ${tableName}
+    where 
+    <#list table.columns as column>
+	  <#if column.pk>
+    	<#if column.keyWord>`</#if>${column.sqlName}<#if column.keyWord>`</#if> = ${column.beginDelimiter} ${column.columnNameFirstLower},jdbcType=${column.sqlTypeName} }
+      </#if>
+    </#list>  
+  </select>
+  
+   <select id="selectByPrimaryKeys" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ${tableName} 
+    <trim prefix="WHERE" prefixOverrides="AND|OR">  
+    <#list table.columns as column>
+	  <#if column.pk>
+    <#if column.keyWord>`</#if>${column.sqlName}<#if column.keyWord>`</#if> in
+    <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">${r"#{id}"}
+    </foreach>
+      </#if>
+    </#list>  
+	</trim>
+  </select>
+  
+  <select id="selectByentity" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from ${tableName}
+ 	<where>
+      <include refid="Example_Where_Clause" /> 
+	</where> 
+  </select>
+  
+  <select id="selectListByStartRow" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ${tableName}
+  	<where>
+      <include refid="Example_Where_Clause" /> 
+	</where>
+	limit
+		 ${r"#{offset}"}, ${r"#{limit}"}
+  </select>
+  
+  
+  <select id="selectListByStartPrimaryKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ${tableName}
+  	<where>
+    <#list table.columns as column>
+    AND<#if !column.pk>
+    <if test="${column.columnNameFirstLower} != null">  
+    <#if column.keyWord>`</#if>${column.sqlName}<#if column.keyWord>`</#if>  = ${column.beginDelimiter} example.${column.columnNameFirstLower},jdbcType=${column.sqlTypeName} } 
+    </if>
+    </#if>
+    <#if column.pk>
+    <#if column.keyWord>`</#if>${column.sqlName}<#if column.keyWord>`</#if>  >= ${column.beginDelimiter} example.${column.columnNameFirstLower},jdbcType=${column.sqlTypeName} } 
+    </#if>  
+    </#list>  
+	</where>
+	limit
+		0, ${r"#{limit}"}
+  </select>
+  
+  <select id="selectCount" resultType="java.lang.Long">
+    select count(1) from ${tableName} 
+    <where> 
+      <include refid="Example_Where_Clause" />  
+    </where>
+  </select>
+  
+  
+  <select id="selectAll" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ${tableName}
+  </select>
+  
+  
+  <insert id="insert" parameterType="${basepackage}.model.${className}Model">
+    insert into ${tableName}
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <#list table.columns as column>
+    	<#if column.keyWord>`</#if>${column.sqlName}<#if column.keyWord>`</#if>,
+      </#list>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <#list table.columns as column>
+	    ${column.beginDelimiter} ${column.columnNameFirstLower},jdbcType=${column.sqlTypeName} },
+      </#list>
+    </trim>
+  </insert>
+  
+  <insert id="insertByNotNull" parameterType="${basepackage}.model.${className}Model">
+    insert into ${tableName}
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <#list table.columns as column>
+      <if test="${column.columnNameFirstLower} != null" >
+    	<#if column.keyWord>`</#if>${column.sqlName}<#if column.keyWord>`</#if>,
+      </if>
+      </#list>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <#list table.columns as column>
+      <if test="${column.columnNameFirstLower} != null" >
+	    ${column.beginDelimiter} ${column.columnNameFirstLower},jdbcType=${column.sqlTypeName} },
+	  </if>
+      </#list>
+    </trim>
+  </insert>
+  
+  <insert id="inserts">
+    insert into ${tableName}
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <#list table.columns as column>
+    	<#if column.keyWord>`</#if>${column.sqlName}<#if column.keyWord>`</#if>,
+      </#list>
+    </trim>
+      values 
+     <foreach collection="list" item="item" index="index" separator="," >  
+      <trim prefix="(" suffix=")" suffixOverrides="," >
+      <#list table.columns as column>
+      <if test="${column.columnNameFirstLower} != null" >
+	    ${column.beginDelimiter} item.${column.columnNameFirstLower},jdbcType=${column.sqlTypeName} },
+	  </if>
+      </#list>
+    </trim> 
+    </foreach>  
+  </insert>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete ${tableName} 
+    where 
+    <#list table.columns as column>
+	  <#if column.pk>
+    	<#if column.keyWord>`</#if>${column.sqlName}<#if column.keyWord>`</#if> = ${column.beginDelimiter} ${column.columnNameFirstLower},jdbcType=${column.sqlTypeName} }
+      </#if>
+    </#list>
+  </delete>
+  
+  <delete id="deleteByPrimaryKeys" >
+    delete ${tableName} 
+    where 
+   <#list table.columns as column>
+   <#if column.pk>
+   <#if column.keyWord>`</#if>${column.sqlName}<#if column.keyWord>`</#if> in
+   <foreach collection="list" item="id" index="index"
+       open="(" close=")" separator=",">${r"#{id}"}
+   </foreach>
+   </#if>
+  </#list>  
+  </delete>
+  
+  <delete id="deleteByentity" >
+    delete ${tableName} 
+    where 
+    <include refid="Example_Where_Clause" /> 
+  </delete>
+  
+  
+  <update id="update" parameterType="${basepackage}.model.${className}Model" >
+    update ${tableName}
+    <set >
+      <#list table.columns as column>
+      	<#if !column.pk>
+	    <#if column.keyWord>`</#if>${column.sqlName}<#if column.keyWord>`</#if> = ${column.beginDelimiter} ${column.columnNameFirstLower},jdbcType=${column.sqlTypeName} },
+	    </#if>
+    </#list>
+    </set>
+    where 
+    <#list table.columns as column>
+	  <#if column.pk>
+    	<#if column.keyWord>`</#if>${column.sqlName}<#if column.keyWord>`</#if> = ${column.beginDelimiter} ${column.columnNameFirstLower},jdbcType=${column.sqlTypeName} }
+      </#if>
+    </#list>
+  </update>
+  
+  
+    <update id="updateByPrimaryKeys">
+    update ${tableName}
+    <set >
+      <#list table.columns as column>
+      	<#if !column.pk>
+	    <#if column.keyWord>`</#if>${column.sqlName}<#if column.keyWord>`</#if> = ${column.beginDelimiter} entity.${column.columnNameFirstLower},jdbcType=${column.sqlTypeName} },
+	    </#if>
+    </#list>
+    </set>
+    where 
+   <#list table.columns as column>
+   <#if column.pk>
+   <#if column.keyWord>`</#if>${column.sqlName}<#if column.keyWord>`</#if> in
+   <foreach collection="primaryKeys" item="id" index="index"
+       open="(" close=")" separator=",">${r"#{id}"}
+   </foreach>
+   </#if>
+  </#list>  
+  </update>
+  
+  
+  <update id="updateByExample">
+    update ${tableName}
+    <set >
+      <#list table.columns as column>
+      	<#if !column.pk>
+	    <#if column.keyWord>`</#if>${column.sqlName}<#if column.keyWord>`</#if> = ${column.beginDelimiter} entity.${column.columnNameFirstLower},jdbcType=${column.sqlTypeName} },
+	    </#if>
+    </#list>
+    </set>
+	<where> 
+      <include refid="Example_Where_Clause" />  
+    </where>
+  </update>
+  
+  
+  
+  <update id="updateNotNull" parameterType="${basepackage}.model.${className}Model" >
+    update ${tableName}
+    <set >
+      <#list table.columns as column>
+      	<#if !column.pk>
+	    <if test="${column.columnNameFirstLower} != null" >
+	    <#if column.keyWord>`</#if>${column.sqlName}<#if column.keyWord>`</#if> = ${column.beginDelimiter} ${column.columnNameFirstLower},jdbcType=${column.sqlTypeName} },
+	    </if>
+	    </#if>
+    </#list>
+    </set>
+    where 
+    <#list table.columns as column>
+	  <#if column.pk>
+    	<#if column.keyWord>`</#if>${column.sqlName}<#if column.keyWord>`</#if> = ${column.beginDelimiter} ${column.columnNameFirstLower},jdbcType=${column.sqlTypeName} }
+      </#if>
+    </#list>
+  </update>
+  
+  
+   <update id="updateByPrimaryKeyNotNull">
+    update ${tableName}
+    <set >
+      <#list table.columns as column>
+      	<#if !column.pk>
+        <if test="entity.${column.columnNameFirstLower} != null" >
+	    <#if column.keyWord>`</#if>${column.sqlName}<#if column.keyWord>`</#if> = ${column.beginDelimiter} entity.${column.columnNameFirstLower},jdbcType=${column.sqlTypeName} },
+	    </if>
+	    </#if>
+    </#list>
+    </set>
+    where 
+   <#list table.columns as column>
+   <#if column.pk>
+   <#if column.keyWord>`</#if>${column.sqlName}<#if column.keyWord>`</#if> in
+   <foreach collection="primaryKeys" item="id" index="index"open="(" close=")" separator=",">${r"#{id}"}</foreach>
+   </#if>
+  </#list>  
+  </update>
+  
+  
+  <update id="updateByExampleNotNull">
+    update ${tableName}
+    <set >
+      <#list table.columns as column>
+      	<#if !column.pk>
+      	<if test="entity.${column.columnNameFirstLower} != null" >
+	    <#if column.keyWord>`</#if>${column.sqlName}<#if column.keyWord>`</#if> = ${column.beginDelimiter} entity.${column.columnNameFirstLower},jdbcType=${column.sqlTypeName} },
+	    </if>
+	    </#if>
+    </#list>
+    </set>
+	<where> 
+      <include refid="Example_Where_Clause" />  
+    </where>
+  </update>
+ 
+
+</mapper>
